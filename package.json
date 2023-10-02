@@ -1,0 +1,31 @@
+{
+  "name": "pveclient",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "cd angular_src && ng build --base-href ./ && cd .. && electron-forge start",
+    "rebuild-ng-app": "cd angular_src && ng build --base-href ./ && cd ..",
+    "package-linux": "electron-forge package --platform linux;cd out/pveclient-linux-x64/;zip -9 -r ../pveclient-linux-x64.zip ./",
+    "package-win": "electron-forge package --platform win32;cd out/pveclient-win32-x64/;zip -9 -r ../pveclient-win32-x64.zip ./",
+    "make-linux": "electron-forge make --platform linux && ./convert-deb-to-rpm.sh"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-forge/cli": "^6.4.1",
+    "@electron-forge/maker-deb": "^6.4.1",
+    "@electron-forge/maker-rpm": "^6.4.1",
+    "@electron-forge/maker-squirrel": "^6.4.1",
+    "@electron-forge/maker-zip": "^6.4.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.4.1",
+    "electron": "^26.1.0"
+  },
+  "dependencies": {
+    "btoa": "^1.2.1",
+    "electron-squirrel-startup": "^1.0.0",
+    "generate-password": "^1.7.0",
+    "node-fetch": "^2.6.7",
+    "node-xlsx": "^0.23.0"
+  }
+}
