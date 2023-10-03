@@ -1,10 +1,10 @@
-const {app, BrowserWindow, Menu, ipcRenderer, ipcMain, dialog, nativeImage} = require('electron');
+const {app, BrowserWindow, Menu, ipcMain, dialog} = require('electron');
 const path = require('path');
 const url = require("url");
 
-const debugEnabled = true;
-const showMenu = true;
-const showFrame = true;
+const debugEnabled = false;
+const showMenu = false;
+const showFrame = false;
 const maximize = false;
 
 let win;
@@ -31,25 +31,18 @@ const createWindow = () => {
         win.maximize();
     }
 
-
-    // win.loadFile('src/index.html');
-
     win.loadURL(
         url.format({
-            // тут нужно уточнить, что путь к файлу index.html будет валиден для
-            // Angular 6+ приложения. Если у вас версия ниже, то используйте
-            // следующий путь - /dist/index.html
-            pathname: path.join(__dirname, '..','angular_src/dist/angular_src/index.html'),
+            pathname: path.join(__dirname, '..', 'angular_src/dist/angular_src/index.html'),
             protocol: "file:",
             slashes: true
         })
     );
 
     win.on('close', (event) => {
+
         // Отменяем стандартное действие закрытия приложения
         event.preventDefault();
-        // Можно добавить здесь дополнительную логику, если необходимо
-        // console.log('Попытка закрыть приложение. Выполните подтверждение.');
 
         dialog.showMessageBox(win, {
             type: 'question',
@@ -89,46 +82,16 @@ app.on('window-all-closed', (event) => {
     app.quit();
 });
 
-// обработка вызова диалога выбора каталога из контекста браузера -- начало
-ipcMain.handle('open-directory-dialog', async (event) => {
-    return await dialog.showOpenDialog(win, {
-        title: 'Выберите каталог для сохранения результата',
-        message: 'Выберите каталог для сохранения результата',
-        properties: ['openDirectory'],
-    });
+// запуск spice клиента -- начало
+const SpiceClientRunner = require('../src/helpers/spice-client-runner');
+ipcMain.on('evt-run-spice-client', (event, arg) => {
+    new SpiceClientRunner('evt-run-spice-client', event, arg);
 });
-// обработка вызова диалога выбора каталога из контекста браузера -- конец
+// запуск spice клиента -- конец
 
-// обработка вызова диалога подтверждения -- начало
-ipcMain.handle('open-confirm-dialog', async (event, data) => {
-    return (await dialog.showMessageBox(win, {
-        type: 'question',
-        icon: path.join(__dirname, "icon.png"),
-        buttons: ['OK', 'Отмена'],
-        title: data.title,
-        message: data.message
-    })).response === 0;
-});
-// обработка вызова диалога подтверждения -- конец
-
-// получение списка групп -- начало
-const GetGroupList = require('../src/helpers/get-group-list');
-ipcMain.on('evt-group-list', (event, arg) => {
-    new GetGroupList('evt-group-list', event, arg);
-});
-// получение списка групп -- конец
-
-// получение выгрузки для бухгалтерии -- начало
-const GetAnketsExport = require('../src/helpers/get-ankets-export');
-ipcMain.on('evt-buh-export', (event, arg) => {
-    new GetAnketsExport('evt-buh-export', event, arg);
-});
-// получение выгрузки для бухгалтерии -- конец
-
-// получение выгрузки для бухгалтерии -- начало
+// конфиг -- начало
 const Config = require('../src/helpers/config');
 ipcMain.on('evt-config-set', (event, arg) => {
     new Config('evt-config-set', event, arg);
 });
-// получение выгрузки для бухгалтерии -- конец
-
+// конфиг -- конец

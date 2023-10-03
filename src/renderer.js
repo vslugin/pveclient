@@ -1,3 +1,4 @@
+console.log('RENDERER DETECTED');
 // пример вытаскивания версии ноды из контекста nodejs в браузер
 /*const information = document.getElementById('info')
 information.innerText = `This app is using nodejs v${window.pveclient.node()})`;*/

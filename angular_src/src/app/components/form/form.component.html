@@ -1,0 +1,44 @@
+<form [formGroup]="form" novalidate (ngSubmit)="onSubmit()">
+  <mat-card class="form">
+    <mat-card-header>
+      <mat-card-title>PVE Client</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-select placeholder="Сервер" formControlName="server">
+              <mat-option *ngFor="let server of servers" [value]="server">
+                {{ server.title }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.controls['server'].hasError('required')">
+              Поле <strong>обязательно</strong> для заполнения
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Логин" formControlName="login">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput type="password" placeholder="Пароль" formControlName="password">
+          </mat-form-field>
+        </div>
+      </div>
+
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" type="submit">Войти</button>
+    </mat-card-actions>
+  </mat-card>
+</form>

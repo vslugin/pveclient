@@ -15,18 +15,16 @@ module.exports = class Config {
         this.channel = channel;
         this.event = event;
         this.initConfig();
-        if (arg.inpSelector && arg.inpValue) {
-            this.inpSelector = arg.inpSelector;
-            this.inpValue = arg.inpValue;
-            this.update();
-        } else {
-            this.sendConfig();
-        }
+
+        // здесь нужно будет ходить на внешний сервер и если там есть конфиг, забирать его
+        // и обновлять текущий конфиг
+
+        this.sendConfig();
     }
 
     initConfig() {
         this.configDir = path.join(os.homedir(), '.config', 'pveclient');
-        this.configPath = path.join(this.configDir, 'credentials.conf');
+        this.configPath = path.join(this.configDir, 'pveclient.conf');
         if (!fs.existsSync(this.configDir)) {
             fs.mkdirSync(this.configDir, {recursive: true});
         }
@@ -44,26 +42,15 @@ module.exports = class Config {
 
     getConfigDefault() {
         this.config = {
-            serverUrl: 'http://localhost/dbname/odata/standard.odata/',
-            serverLogin: 'admin',
-            serverPassword: ''
+            servers: [
+                {title: 'Этот компьютер', addr: 'localhost', port: 8006, proxyPort: 3128}
+            ]
         };
         fs.writeFileSync(this.configPath, JSON.stringify(this.config));
     }
 
     update() {
-        switch (this.inpSelector) {
-            case '#server-url':
-                this.config.serverUrl = this.inpValue;
-                break;
-            case '#server-login':
-                this.config.serverLogin = this.inpValue;
-                break;
-            case '#server-password':
-                this.config.serverPassword = this.inpValue;
-                break;
-        }
-
+        this.config.servers = this.inpValue;
         fs.writeFileSync(this.configPath, JSON.stringify(this.config));
         this.sendConfig();
     }
