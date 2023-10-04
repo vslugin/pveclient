@@ -6,9 +6,7 @@ import {MAT_SNACK_BAR_DATA} from "@angular/material/snack-bar";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'angular_src';
-}
+export class AppComponent {}
 
 // noinspection AngularMissingOrInvalidDeclarationInModule
 @Component({

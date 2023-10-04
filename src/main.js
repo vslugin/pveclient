@@ -12,7 +12,7 @@ let win;
 const createWindow = () => {
     win = new BrowserWindow({
         frame: showFrame,
-        width: 1600,
+        width: 1000,
         height: 800,
         webPreferences: {
             nodeIntegration: true,
@@ -82,12 +82,27 @@ app.on('window-all-closed', (event) => {
     app.quit();
 });
 
-// запуск spice клиента -- начало
 const SpiceClientRunner = require('../src/helpers/spice-client-runner');
-ipcMain.on('evt-run-spice-client', (event, arg) => {
-    new SpiceClientRunner('evt-run-spice-client', event, arg);
+
+const SCR = new SpiceClientRunner();
+
+// логин и получение списка виртуальных машин -- начало
+ipcMain.on('evt-get-virtual-machines', (event, arg) => {
+    SCR.getVirtualMachines('evt-get-virtual-machines', event, arg);
+});
+// логин и получение списка виртуальных машин -- конец
+
+// запуск spice клиента -- начало
+ipcMain.on('evt-run-virt-viewer', (event, arg) => {
+    SCR.runVirtViewer('evt-run-virt-viewer', event, arg);
 });
 // запуск spice клиента -- конец
+
+// отправка выбранного сервера -- начало
+ipcMain.on('evt-set-selected-server', (event, arg) => {
+    SCR.setSelectedServer('evt-set-selected-server', event, arg);
+});
+// отправка выбранного сервера -- конец
 
 // конфиг -- начало
 const Config = require('../src/helpers/config');

@@ -1,0 +1,28 @@
+<form [formGroup]="form" novalidate (ngSubmit)="onSubmit()">
+  <mat-card class="form">
+    <mat-card-header>
+      <mat-card-title>Выбор и запуск виртуальной машины</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-select placeholder="Виртуальная машина" formControlName="virtualMachine">
+              <mat-option *ngFor="let vm of virtualMachines" [value]="vm">
+                {{ vm.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.controls['virtualMachine'].hasError('required')">
+              Поле <strong>обязательно</strong> для заполнения
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" type="submit">Подключиться к выбранной машине</button>
+    </mat-card-actions>
+  </mat-card>
+</form>

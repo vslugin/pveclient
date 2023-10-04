@@ -6,4 +6,4 @@ contextBridge.exposeInMainWorld('pveclient', {
     handleEvent: (channel, callback) => {
         ipcRenderer.on(channel, callback);
     }
-})
+});

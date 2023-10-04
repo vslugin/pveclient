@@ -12,13 +12,14 @@ import {MatCardModule} from '@angular/material/card';
 import {ReactiveFormsModule} from '@angular/forms';
 import {FormComponent} from "./components/form/form.component";
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from "@angular/material/snack-bar";
+import {FormListComponent} from "./components/form-list/form-list.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     PageMainComponent,
     FormComponent,
-    FormComponent
+    FormListComponent
   ],
   imports: [
     BrowserModule,

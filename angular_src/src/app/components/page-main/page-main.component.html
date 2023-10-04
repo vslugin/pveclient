@@ -1,3 +1,4 @@
 <div class="wr">
-  <app-form [servers]="servers"></app-form>
+  <app-form [class.hidden]="isVirtualMachinesReady" [servers]="servers"></app-form>
+  <app-form-list [class.hidden]="!isVirtualMachinesReady" [virtualMachines]="virtualMachines"></app-form-list>
 </div>

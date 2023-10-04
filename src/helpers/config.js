@@ -43,7 +43,7 @@ module.exports = class Config {
     getConfigDefault() {
         this.config = {
             servers: [
-                {title: 'Этот компьютер', addr: 'localhost', port: 8006, proxyPort: 3128}
+                {title: 'Этот компьютер', addr: 'localhost', port: 8006}
             ]
         };
         fs.writeFileSync(this.configPath, JSON.stringify(this.config));
