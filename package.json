@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/main.js",
   "scripts": {
-    "start": "cd angular_src && ng build --base-href ./ && cd .. && electron-forge start",
+    "start": "electron-forge start",
+    "start-with-build": "cd angular_src && ng build --base-href ./ && cd .. && electron-forge start",
     "rebuild-ng-app": "cd angular_src && ng build --base-href ./ && cd ..",
     "package-linux": "electron-forge package --platform linux;cd out/pveclient-linux-x64/;zip -9 -r ../pveclient-linux-x64.zip ./",
     "package-win": "electron-forge package --platform win32;cd out/pveclient-win32-x64/;zip -9 -r ../pveclient-win32-x64.zip ./",
