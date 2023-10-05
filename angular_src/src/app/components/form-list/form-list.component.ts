@@ -9,11 +9,11 @@ import {
   OnInit,
   SimpleChanges
 } from '@angular/core';
-import {FormBuilder, FormControl, Validators} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {Toast} from "../../app.component";
 import {map, Observable, startWith} from "rxjs";
 import {SharedService} from "../../services/shared.service";
+import {ToastService} from "../../services/toast.service";
 
 @Component({
   selector: 'app-form-list',
@@ -35,6 +35,7 @@ export class FormListComponent implements OnInit, AfterViewInit, OnChanges {
     private toast: MatSnackBar,
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef,
+    private toastService: ToastService,
     private sharedService: SharedService
   ) {
   }
@@ -81,16 +82,15 @@ export class FormListComponent implements OnInit, AfterViewInit, OnChanges {
         window.pveclient.handleEvent('evt-run-virt-viewer', (event, data) => {
           switch (data.action) {
             case 'reply':
-              // console.log('REPLY DETECTED', data);
-              this.sendToast(data.msg, 'success');
+              this.toastService.toast(data.msg, 'success');
               break;
             case 'error':
-              this.sendToast(data.err, 'error');
+              this.toastService.toast(data.err, 'error');
               break;
           }
         });
       } else {
-        this.sendToast('Запуск вне контекста Electron!', 'error');
+        this.toastService.toast('Запуск вне контекста Electron!', 'error');
       }
     });
 
@@ -111,14 +111,10 @@ export class FormListComponent implements OnInit, AfterViewInit, OnChanges {
           virtualMachine: this.form.value.virtualMachine
         });
       } else {
-        this.sendToast('Запуск вне контекста Electron!', 'error');
+        this.toastService.toast('Запуск вне контекста Electron!', 'error');
       }
     });
 
-  }
-
-  sendToast(text: string, type: 'success' | 'error' = 'success'): void {
-    this.toast.openFromComponent(Toast, {data: {text, type}, verticalPosition: 'bottom'});
   }
 
   back() {

@@ -1,10 +1,9 @@
 // @ts-nocheck
-import {AfterViewInit, ChangeDetectorRef, Component, NgZone, OnChanges, OnInit} from '@angular/core';
-import {Toast} from "../../app.component";
-import {MatSnackBar} from "@angular/material/snack-bar";
+import {AfterViewInit, ChangeDetectorRef, Component, NgZone} from '@angular/core';
 import {Server} from "../form/form.component";
 import {VirtualMachine} from "../form-list/form-list.component";
 import {SharedService} from "../../services/shared.service";
+import {ToastService} from "../../services/toast.service";
 
 @Component({
   selector: 'app-page-main',
@@ -18,24 +17,27 @@ export class PageMainComponent implements AfterViewInit {
   isVirtualMachinesReady = false;
 
   constructor(
-    private toast: MatSnackBar,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
+    private toastService: ToastService,
     private sharedService: SharedService) {
   }
 
   ngAfterViewInit() {
-    // вызываем бэк для обновления конфига
-    // @ts-ignore
-    window.pveclient.emitEvent('evt-config-set');
+
     this.cdr.detectChanges();
 
     this.ngZone.runOutsideAngular(() => {
       // @ts-ignore
       if (window.pveclient) {
 
+        // вызываем бэк для обновления конфига
+        // @ts-ignore
+        window.pveclient.emitEvent('evt-config-set');
+        // this.cdr.detectChanges();
+
         // хендлим сообщения от общего сервиса
-        this.sharedService.messengerObserver.subscribe((message) => {
+        this.sharedService.messengerObsvbl.subscribe((message) => {
           switch (message) {
             case 'BACK_FROM_FORM_LIST' :
               this.isVirtualMachinesReady = false;
@@ -53,10 +55,10 @@ export class PageMainComponent implements AfterViewInit {
         window.pveclient.handleEvent('evt-config-set', (event, data) => {
           switch (data.action) {
             case 'reply':
-              this.sendToast(data.msg, 'success');
+              this.toastService.toast(data.msg, 'success');
               break;
             case 'error':
-              this.sendToast(data.err, 'error');
+              this.toastService.toast(data.err, 'error');
               break;
             case 'new-config':
               this.servers = data.config.servers;
@@ -68,6 +70,12 @@ export class PageMainComponent implements AfterViewInit {
         // @ts-ignore
         window.pveclient.handleEvent('evt-get-virtual-machines', (event, data) => {
           switch (data.action) {
+            case 'reply':
+              this.toastService.toast(data.msg, 'success');
+              break;
+            case 'error':
+              this.toastService.toast(data.err, 'error');
+              break;
             case 'virtual-machines':
               this.virtualMachines = data.vms;
               this.isVirtualMachinesReady = true;
@@ -79,15 +87,10 @@ export class PageMainComponent implements AfterViewInit {
       } else {
         // стандартный конфиг, если отладка ангуляр приложения вне контекста электрона
         // @ts-ignore
-        this.servers = [{title: 'localhost', addr: 'localhost', port: 8006, proxyPort: 3128}];
-        this.sendToast('Запуск вне контекста Electron!', 'error');
+        this.servers = [{title: 'localhost', addr: 'localhost', port: 8006}];
+        this.toastService.toast('Запуск вне контекста Electron!', 'error')
       }
     });
 
   }
-
-  sendToast(text: string, type: 'success' | 'error' = 'success'): void {
-    this.toast.openFromComponent(Toast, {data: {text, type}, verticalPosition: 'bottom'});
-  }
-
 }

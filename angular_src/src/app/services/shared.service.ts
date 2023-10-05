@@ -9,7 +9,7 @@ export class SharedService {
   constructor() { }
 
   private messenger = new BehaviorSubject(null);
-  public messengerObserver = this.messenger.asObservable();
+  public messengerObsvbl = this.messenger.asObservable();
 
   make(action: string) {
     if(action && action.length) {

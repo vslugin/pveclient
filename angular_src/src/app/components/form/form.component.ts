@@ -5,22 +5,22 @@ import {
   Component,
   Input,
   NgZone,
-  OnChanges,
-  OnInit,
+  OnChanges, OnInit,
   SimpleChanges
 } from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {Toast} from "../../app.component";
 import {map, Observable, startWith} from "rxjs";
 import {SharedService} from "../../services/shared.service";
+import {ToastService} from "../../services/toast.service";
 
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.scss']
 })
-export class FormComponent implements AfterViewInit, OnChanges {
+export class FormComponent implements OnInit, AfterViewInit, OnChanges {
+
   form = this.fb.group({
     server: [null, Validators.required],
     login: [null, Validators.required],
@@ -36,6 +36,7 @@ export class FormComponent implements AfterViewInit, OnChanges {
     private toast: MatSnackBar,
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef,
+    private toastService: ToastService,
     private sharedService: SharedService
   ) {
   }
@@ -49,18 +50,6 @@ export class FormComponent implements AfterViewInit, OnChanges {
     return this.servers.filter(option => option.title.toLowerCase().includes(filterValue));
   }
 
-  ngAfterViewInit() {
-    this.cdr.detectChanges();
-
-    this.filteredServers = this.form.controls.server.valueChanges.pipe(
-      startWith(''),
-      map(value => {
-        const name = typeof value === 'string' ? value : value?.title;
-        return name ? this._filter(name as string) : this.servers.slice();
-      })
-    );
-  }
-
   ngOnChanges(changes: SimpleChanges) {
     if (changes.servers) {
       const currentItems = changes.servers.currentValue;
@@ -71,6 +60,20 @@ export class FormComponent implements AfterViewInit, OnChanges {
         }
       }
     }
+  }
+
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+  }
+
+  ngOnInit() {
+    this.filteredServers = this.form.controls.server.valueChanges.pipe(
+      startWith(''),
+      map(value => {
+        const name = typeof value === 'string' ? value : value?.title;
+        return name ? this._filter(name as string) : this.servers.slice();
+      })
+    );
   }
 
   onSubmit(): void {
@@ -97,14 +100,10 @@ export class FormComponent implements AfterViewInit, OnChanges {
           password: this.form.value.password
         });
       } else {
-        this.sendToast('Запуск вне контекста Electron!', 'error');
+        this.toastService.toast('Запуск вне контекста Electron!', 'error');
       }
     });
 
-  }
-
-  sendToast(text: string, type: 'success' | 'error' = 'success'): void {
-    this.toast.openFromComponent(Toast, {data: {text, type}, verticalPosition: 'bottom'});
   }
 
   back() {

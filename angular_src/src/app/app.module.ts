@@ -11,7 +11,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatCardModule} from '@angular/material/card';
 import {ReactiveFormsModule} from '@angular/forms';
 import {FormComponent} from "./components/form/form.component";
-import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from "@angular/material/snack-bar";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {FormListComponent} from "./components/form-list/form-list.component";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 
@@ -35,9 +35,6 @@ import {MatAutocompleteModule} from "@angular/material/autocomplete";
         MatSnackBarModule,
         MatAutocompleteModule
     ],
-  providers: [
-    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500, position: 'bottom'}}
-  ],
   bootstrap: [AppComponent],
   entryComponents: [
     Toast

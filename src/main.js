@@ -46,7 +46,7 @@ const createWindow = () => {
 
         dialog.showMessageBox(win, {
             type: 'question',
-            icon: path.join(__dirname, "icon.png"),
+            // icon: path.join(__dirname, "icon.png"),
             buttons: ['OK', 'Отмена'],
             title: 'Закрытие приложения',
             message: 'Действительно завершить работу приложения?',

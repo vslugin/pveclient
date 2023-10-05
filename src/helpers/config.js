@@ -94,22 +94,6 @@ module.exports = class Config {
         });
     }
 
-    compareJson(json, pattern) {
-        for (let key in pattern) {
-            if (!json.hasOwnProperty(key)) {
-                return false;
-            }
-            if (typeof json[key] !== "object") {
-                continue;
-            }
-            const check = this.compareJson(json[key], pattern[key]);
-            if (!check) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     arraysAreEqual(array1, array2) {
         if (array1.length !== array2.length) {
             return false;

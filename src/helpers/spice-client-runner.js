@@ -33,7 +33,6 @@ module.exports = class SpiceClientRunner {
 
     setSelectedServer(channel, event, arg) {
         this.selectedServer = arg.selectedServer;
-        console.log('Selected Server', this.selectedServer);
     }
 
     async getVirtualMachines(channel, event, arg) {
@@ -74,22 +73,20 @@ module.exports = class SpiceClientRunner {
 
             fs.writeFileSync(proxyFileName, fileStrings.join("\n"));
 
-            // console.log('SEE FILE', proxyFileName);
+            const remoteViewerBin = '/usr/bin/remote-viewer';
 
-            const p = spawn('/usr/bin/remote-viewer', [proxyFileName]);
+            const p = spawn(remoteViewerBin, ['--full-screen', '--auto-resize=always', proxyFileName]);
 
-            p.stdout.on('data', (data) => {
-                // console.log('ON DATA', data.toString());
-            });
-
-            p.stderr.on('data', (data) => {
-                // console.log('ON ERR DATA', data.toString());
+            p.on('error', (error) => {
+                console.log(error.toString().split('\n')[0]);
             });
 
             p.on('close', (code) => {
                 console.log('ON CLOSE', code);
                 if (code === 0) {
                     this.reply(channel, event, `Сеанс работы с виртуальной машиной завершён успешно`);
+                } else if (code === -2) {
+                    this.error(channel, event, `Не найден исполняемый файл ${remoteViewerBin}! Для устранения этой ошибки установите пакет командой: apt-get install virt-viewer`);
                 } else {
                     this.error(channel, event, `Сеанс работы с виртуальной машиной завершён аварийно`);
                 }
@@ -123,10 +120,12 @@ module.exports = class SpiceClientRunner {
                 this.PVETicket = authData.data.ticket;
                 this.PVE_CSRFPreventionToken = authData.data.CSRFPreventionToken;
             } else {
+                console.log(`Неверные данные для входа`);
                 this.error(channel, event, `Неверные данные для входа`);
                 return;
             }
         } catch (e) {
+            console.log(`Неверные данные для входа` + JSON.stringify(e));
             this.error(channel, event, JSON.stringify(e));
             return;
         }
