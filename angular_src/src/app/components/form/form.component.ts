@@ -1,27 +1,76 @@
 // @ts-nocheck
-import {Component, Input, NgZone, OnInit} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  NgZone,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Toast} from "../../app.component";
+import {map, Observable, startWith} from "rxjs";
+import {SharedService} from "../../services/shared.service";
 
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.scss']
 })
-export class FormComponent implements OnInit {
+export class FormComponent implements AfterViewInit, OnChanges {
   form = this.fb.group({
     server: [null, Validators.required],
     login: [null, Validators.required],
     password: [null, Validators.required]
   });
 
-  @Input() servers: Array<any> = [];
+  filteredServers: Observable<Server[]>;
 
-  constructor(private fb: FormBuilder, private toast: MatSnackBar, private ngZone: NgZone) {
+  @Input() servers: Array<Server> = [];
+
+  constructor(
+    private fb: FormBuilder,
+    private toast: MatSnackBar,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
+    private sharedService: SharedService
+  ) {
   }
 
-  ngOnInit() {
+  displayFn(srv: Server): string {
+    return srv && srv.title ? srv.title : '';
+  }
+
+  private _filter(title: string): Server[] {
+    const filterValue = title.toLowerCase();
+    return this.servers.filter(option => option.title.toLowerCase().includes(filterValue));
+  }
+
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+
+    this.filteredServers = this.form.controls.server.valueChanges.pipe(
+      startWith(''),
+      map(value => {
+        const name = typeof value === 'string' ? value : value?.title;
+        return name ? this._filter(name as string) : this.servers.slice();
+      })
+    );
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.servers) {
+      const currentItems = changes.servers.currentValue;
+      const previousItems = changes.servers.previousValue;
+      if (currentItems !== previousItems) {
+        if (currentItems.length) {
+          this.form.controls.server.setValue('');
+        }
+      }
+    }
   }
 
   onSubmit(): void {
@@ -57,4 +106,14 @@ export class FormComponent implements OnInit {
   sendToast(text: string, type: 'success' | 'error' = 'success'): void {
     this.toast.openFromComponent(Toast, {data: {text, type}, verticalPosition: 'bottom'});
   }
+
+  back() {
+    this.sharedService.make('BACK_FROM_FORM');
+  }
+}
+
+export interface Server {
+  title: string;
+  addr: string;
+  port: number;
 }

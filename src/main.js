@@ -5,14 +5,14 @@ const url = require("url");
 const debugEnabled = false;
 const showMenu = false;
 const showFrame = false;
-const maximize = false;
+const maximize = true;
 
 let win;
 
 const createWindow = () => {
     win = new BrowserWindow({
         frame: showFrame,
-        width: 1000,
+        width: 1800,
         height: 800,
         webPreferences: {
             nodeIntegration: true,
@@ -83,30 +83,33 @@ app.on('window-all-closed', (event) => {
 });
 
 const SpiceClientRunner = require('../src/helpers/spice-client-runner');
+const Config = require('../src/helpers/config');
 
-const SCR = new SpiceClientRunner();
+let CFG;
+let SCR;
 
-// логин и получение списка виртуальных машин -- начало
+// конфиг
+ipcMain.on('evt-config-set', (event, arg) => {
+    SCR = new SpiceClientRunner('evt-init', event, arg);
+    CFG = new Config('evt-config-set', event, arg);
+});
+
+// логин и получение списка виртуальных машин
 ipcMain.on('evt-get-virtual-machines', (event, arg) => {
     SCR.getVirtualMachines('evt-get-virtual-machines', event, arg);
 });
-// логин и получение списка виртуальных машин -- конец
 
-// запуск spice клиента -- начало
+// запуск spice клиента
 ipcMain.on('evt-run-virt-viewer', (event, arg) => {
     SCR.runVirtViewer('evt-run-virt-viewer', event, arg);
 });
-// запуск spice клиента -- конец
 
-// отправка выбранного сервера -- начало
+// отправка выбранного сервера
 ipcMain.on('evt-set-selected-server', (event, arg) => {
     SCR.setSelectedServer('evt-set-selected-server', event, arg);
 });
-// отправка выбранного сервера -- конец
 
-// конфиг -- начало
-const Config = require('../src/helpers/config');
-ipcMain.on('evt-config-set', (event, arg) => {
-    new Config('evt-config-set', event, arg);
+// попытка закрытия из клиента
+ipcMain.on('evt-close-attempt', (event, arg) => {
+    app.quit();
 });
-// конфиг -- конец

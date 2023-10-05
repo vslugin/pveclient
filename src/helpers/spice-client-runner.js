@@ -12,20 +12,22 @@ module.exports = class SpiceClientRunner {
     PVE_CSRFPreventionToken = null;
     PVEMachines = [];
 
-    constructor() {
+    constructor(channel, event, arg) {
 
         this.configDir = path.join(os.homedir(), '.config', 'pveclient');
         this.configPath = path.join(this.configDir, 'pveclient.conf');
 
         if (!fs.existsSync(this.configPath)) {
-            this.reply(`Файл конфигурации не существует: ${this.configPath}`);
+            this.reply(channel, event, `Файл конфигурации не существует: ${this.configPath}`);
             return;
         }
 
         if (!this.initConfig()) {
-            this.reply(`Не удаётся прочитать файл конфигурации: ${this.configPath}`);
+            this.reply(channel, event, `Не удаётся прочитать файл конфигурации: ${this.configPath}`);
             return;
         }
+
+        console.log('С файлом конфигурации всё в порядке');
 
     }
 
@@ -77,11 +79,11 @@ module.exports = class SpiceClientRunner {
             const p = spawn('/usr/bin/remote-viewer', [proxyFileName]);
 
             p.stdout.on('data', (data) => {
-               // console.log('ON DATA', data.toString());
+                // console.log('ON DATA', data.toString());
             });
 
             p.stderr.on('data', (data) => {
-               // console.log('ON ERR DATA', data.toString());
+                // console.log('ON ERR DATA', data.toString());
             });
 
             p.on('close', (code) => {

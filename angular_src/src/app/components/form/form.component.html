@@ -1,22 +1,25 @@
 <form [formGroup]="form" novalidate (ngSubmit)="onSubmit()">
   <mat-card class="form">
     <mat-card-header>
-      <mat-card-title>Вход на сервер</mat-card-title>
+      <mat-card-title>Вход на сервер PVE</mat-card-title>
     </mat-card-header>
     <mat-card-content>
 
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <mat-select placeholder="Сервер" formControlName="server">
-              <mat-option *ngFor="let server of servers" [value]="server">
-                {{ server.title }}
+            <mat-label>Сервер PVE</mat-label>
+            <input type="text" matInput formControlName="server" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let vm of filteredServers | async" [value]="vm">
+                {{vm.title}}
               </mat-option>
-            </mat-select>
+            </mat-autocomplete>
             <mat-error *ngIf="form.controls['server'].hasError('required')">
               Поле <strong>обязательно</strong> для заполнения
             </mat-error>
           </mat-form-field>
+
         </div>
       </div>
 
@@ -39,6 +42,7 @@
     </mat-card-content>
     <mat-card-actions>
       <button mat-raised-button color="primary" type="submit">Войти</button>
+      <button mat-raised-button color="secondary" type="button" (click)="back()">Выход</button>
     </mat-card-actions>
   </mat-card>
 </form>

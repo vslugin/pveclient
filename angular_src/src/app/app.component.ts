@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {ChangeDetectorRef, Component, Inject} from '@angular/core';
 import {MAT_SNACK_BAR_DATA} from "@angular/material/snack-bar";
 
 @Component({
@@ -6,7 +6,14 @@ import {MAT_SNACK_BAR_DATA} from "@angular/material/snack-bar";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor(private cdr: ChangeDetectorRef) {
+  }
+
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+  }
+}
 
 // noinspection AngularMissingOrInvalidDeclarationInModule
 @Component({
